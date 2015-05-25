@@ -1,0 +1,119 @@
+// Circular Queue
+
+#include <bits/stdc++.h>
+using namespace std;
+
+template <class T>
+class Queue{
+    int size,f,r;
+    T *a;
+
+protected:
+    void resize();
+
+public:
+    Queue();
+    void enqueue(T val);
+    void dequeue();
+    void print();
+};
+
+template <class T>
+Queue<T>::Queue()
+{
+    a = new int [1];
+    size = 1, f = 0, r = 0;
+}
+
+template <class T>
+void Queue<T>::resize()
+{
+    int i,k;
+    T *b = new T [size*2];
+
+    for(i=0,k=f; k<r; i++,k++)
+        b[i] = a[k%size];
+
+    size = size * 2;
+    delete []a;
+    a = b;
+    r = r-f;
+    f = 0;
+}
+
+template <class T>
+void Queue<T>::print()
+{
+    cout << "Current Queue: ";
+
+    for(int i=f; i<r; i++)
+        cout << a[i%size] << " ";
+
+    cout << endl;
+}
+
+template <class T>
+void Queue<T>::enqueue(T val)
+{
+    if(r-f>=size)
+        resize();
+
+    a[r%size] = val;
+    r++;
+
+    print();
+}
+
+template <class T>
+void Queue<T>::dequeue()
+{
+    if(f>=r)
+        cout << "Can not dequeue. Queue full!" << endl;
+    else
+        f++;
+
+    if(f>=size)
+    {
+        f = f % size;
+        r = r % size;
+    }
+
+    print();
+}
+
+int main()
+{
+    Queue <int> x;
+    x.enqueue(5);
+    x.enqueue(7);
+    x.enqueue(4);
+    x.enqueue(6);
+    x.enqueue(9);
+    x.enqueue(1);
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.enqueue(5);
+    x.enqueue(7);
+    x.enqueue(4);
+    x.enqueue(6);
+    x.enqueue(9);
+    x.enqueue(1);
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+    x.dequeue();
+
+    //cout << "Queue Capacity: " << size << endl;
+
+    return 0;
+}
+
+
