@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    
+    int i,len,n,cnt=0;
+    
+    /* character array input
+    char s[105][105];
+
+    while( gets(s[cnt]) )
+        cnt++;
+  */
+  
+  /* string array
+  string s[105];
+
+    while( getline(cin,s[cnt]) )
+        cnt++;
+  */
+  
+    for(i=0; i<cnt; i++)
+        cout << s[i] << endl;
+
+    return 0;
+}
