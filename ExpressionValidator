@@ -1,0 +1,225 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include "Stack.h"
+using namespace std;
+
+int priority(char ch)
+{
+    switch(ch)
+    {
+        case '+': case '-':
+            return 1;
+        case '*': case '/':
+            return 2;
+        case '%':
+            return 3;
+        case '^':
+            return 4;
+        default:
+            return 0;
+    }
+}
+
+void makePostfix(string s, string &t)
+{
+    Stack store;
+    char ch;
+    int p;
+    string temp;
+
+    for(int i = 0; i < s.size(); i++)
+    {
+        temp = "";
+
+        while(i < s.size() && s[i] >= '0' && s[i] <= '9')
+        {
+            temp += s[i];
+            i++;
+        }
+
+        if( !temp.empty() )
+        {
+            t += temp;
+            t += " ";
+        }
+
+        if(i < s.size())
+        {
+            p = priority(s[i]);
+
+            if(priority(s[i]) >= 1)
+            {
+                if(t.empty() || priority(s[i-1]) >= 1)
+                {
+                    cout << "Syntax Error!" << endl;
+                    t = "";
+                    return ;
+                }
+
+                ch = store.Top();
+
+                while(priority(ch) >= p)
+                {
+                    t += ch;
+                    store.Pop();
+                    ch = store.Top();
+                }
+
+                store.Push(s[i]);
+            }
+            else if(s[i] == '[' || s[i] == '{' || s[i] == '(')
+            {
+                store.Push(s[i]);
+            }
+            else if(s[i] == ']' || s[i] == '}' || s[i] == ')')
+            {
+                ch = store.Top();
+
+                while(ch != NULL && ch != '[' && ch != '{' && ch != '(')
+                {
+                    t += ch;
+                    store.Pop();
+                    ch = store.Top();
+                }
+
+                if( (s[i] == ']' && ch == '[') || (s[i] == '}' && ch == '{') || (s[i] == ')' && ch == '(') )
+                    store.Pop();
+                else
+                {
+                    cout << "Syntax Error! Expected opening bracket before " << s[i] << endl;
+                    t = "";
+                    return ;
+                }
+            }
+            else
+            {
+                cout << "Syntax Error! Invalid Character." << endl;
+                t = "";
+                return ;
+            }
+        }
+    }
+
+    ch = store.Top();
+
+    while(priority(ch) >= 1)
+    {
+        t += ch;
+        store.Pop();
+        ch = store.Top();
+    }
+
+    if( !store.Empty() )
+    {
+        cout << "Syntax Error!" << endl;
+        t = "";
+        return ;
+    }
+}
+
+int toNum(string s)
+{
+    int i = 0, sum = 0;
+
+    while(i < s.size())
+    {
+        sum = sum * 10 + (s[i] - '0');
+        i++;
+    }
+
+    return sum;
+}
+
+string toStr(int n)
+{
+    string temp;
+    char ch;
+
+    do
+    {
+        ch = '0' + (n % 10);
+        temp = ch + temp;
+        n /= 10;
+
+    } while(n > 0);
+
+    return temp;
+}
+
+int calc(int x, int y, char ch)
+{
+    switch(ch)
+    {
+        case '+':
+            return x + y;
+        case '-':
+            return x - y;
+        case '*':
+            return x * y;
+        case '/':
+            return x / y;
+        case '%':
+            return x % y;
+        case '^':
+            return pow(x, y);
+    }
+}
+
+int calculateValue(string s)
+{
+    int i = 0, k, j, value, num[2];
+    string temp;
+
+    while(i < s.size() && priority(s[i]) == 0)
+        i++;
+
+    k = i - 1;
+
+    for(j = 0; j < 2; j++)
+    {
+        temp = "";
+        k--;
+
+        while(k >= 0 && s[k] != ' ')
+        {
+            temp = s[k] + temp;
+            k--;
+        }
+
+        num[j] = toNum(temp);
+    }
+
+    value = calc(num[1], num[0], s[i]);
+
+    temp = toStr(value);
+    temp += " ";
+
+    s.replace(k+1, i-k, temp);
+
+    if(s == temp)
+        return value;
+    else
+        return calculateValue(s);
+}
+
+int main()
+{
+    int len, i, k;
+    char ch;
+    string s, t;
+    bool flag;
+
+    cin >> s;
+
+    makePostfix(s, t);
+
+    if( !t.empty() )
+    {
+        cout << endl << "Postfix : " << t << endl;
+
+        cout << "Calculated value : " << calculateValue(t) << endl;
+    }
+
+    return 0;
+}
