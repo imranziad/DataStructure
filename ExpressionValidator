@@ -1,8 +1,70 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include "Stack.h"
 using namespace std;
+
+// STACK
+class Stack{
+    int top, Size;
+    char *a;
+public:
+    Stack();
+    void Resize();
+    void Push(char value);
+    void Pop();
+    char Top();
+    bool Empty();
+};
+
+Stack::Stack()
+{
+    top = -1;
+    Size = 1;
+    a = new char [Size];
+}
+
+void Stack::Resize()
+{
+    Size *= 2;
+    char *b = new char [Size];
+
+    for(int i = 0; i <= top; i++)
+        b[i] = a[i];
+    delete []a;
+    a = b;
+}
+
+void Stack::Push(char value)
+{
+    if(top == Size-1)
+        Resize();
+
+    top++;
+    a[top] = value;
+}
+
+void Stack::Pop()
+{
+    if( !Empty() )
+        top--;
+}
+
+char Stack::Top()
+{
+    if( !Empty() )
+        return a[top];
+
+    return NULL;
+}
+
+bool Stack::Empty()
+{
+    if(top == -1)
+        return true;
+
+    return false;
+}
+// End of Stack
 
 int priority(char ch)
 {
@@ -173,6 +235,12 @@ int calculateValue(string s)
 
     while(i < s.size() && priority(s[i]) == 0)
         i++;
+
+    if(i == s.size())
+    {
+        s.erase(i-1,1);
+        return toNum(s);
+    }
 
     k = i - 1;
 
